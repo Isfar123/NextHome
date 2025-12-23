@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Listing - Accommodation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #f5f5f5;
+            --dark: #34495e;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 5%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            margin-right: 8px;
+            color: var(--accent);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-block;
+            text-align: center;
+        }
+        
+        .btn-outline {
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            background: transparent;
+        }
+        
+        .btn-filled {
+            background-color: var(--primary);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-filled:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        /* Form Page Specific Styles */
+        .form-page {
+            min-height: 100vh;
+            padding-top: 80px; /* Account for fixed header */
+            padding-bottom: 2rem;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header-title h1 {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+        
+        .header-title p {
+            color: #777;
+        }
+        
+        .form-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            transition: all 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+        
+        .textarea-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .image-preview-container {
+            margin-top: 1rem;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .image-preview-container:hover {
+            border-color: var(--primary);
+        }
+        
+        .image-preview-container i {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .image-preview-text {
+            color: #777;
+        }
+        
+        .image-preview-text span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .btn-cancel {
+            background-color: #ecf0f1;
+            color: var(--dark);
+        }
+        
+        .btn-cancel:hover {
+            background-color: #dfe4ea;
+        }
+        
+        .upload-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .preview-item {
+            width: 120px;
+            height: 120px;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.25rem;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: rgba(231, 76, 60, 0.8);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .preview-item .remove-btn:hover {
+            background-color: var(--accent);
+        }
+        
+        footer {
+            background-color: var(--secondary);
+            color: white;
+            padding: 3rem 5%;
+        }
+        
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .footer-col h3::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -10px;
+            width: 50px;
+            height: 2px;
+            background-color: var(--primary);
+        }
+        
+        .footer-col ul {
+            list-style: none;
+        }
+        
+        .footer-col ul li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .footer-col ul a {
+            color: #ddd;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer-col ul a:hover {
+            color: var(--primary);
+            margin-left: 5px;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-links a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.3s;
+        }
+        
+        .social-links a:hover {
+            background-color: var(--primary);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: #1a252f;
+            color: #ddd;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <i class="fas fa-hotel"></i>
+                <span>Accommodation</span>
+            </div>
+            <div class="nav-links">
+                <a href="{% url 'dashboard' %}">Home</a>
+                <a href="{% url 'my_listings' %}">My Listings</a>
+            </div>
+            <div class="auth-buttons">
+                <span class="welcome-user">Welcome, {{ request.user.username }}</span>
+                <a href="#" class="btn btn-outline">My Profile</a>
+                <a href="{% url 'logout' %}" class="btn btn-filled">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <div class="form-page">
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="form-header">
+                <div class="header-title">
+                    <h1>Add New Listing</h1>
+                    <p>Create a new property listing</p>
+                </div>
+                <a href="{% url 'dashboard' %}" class="btn btn-outline">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+
+            <!-- Form Container -->
+            <div class="form-container">
+                <form method="POST" enctype="multipart/form-data" action="{% url 'add_listing' %}">
+
+                    {% csrf_token %}
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="location">Location</label>
+                            <input type="text" id="location" name="location" class="form-control" value="Bashundhara" readonly>
+                            <small class="form-text" style="color: #777; margin-top: 0.25rem;">Default location is set to Bashundhara</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="block">Block</label>
+                            <select id="block" name="block" class="form-control" required>
+                                <option value="">Select a block</option>
+                                <option value="A">Block A</option>
+                                <option value="B">Block B</option>
+                                <option value="C">Block C</option>
+                                <option value="D">Block D</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rent">Rent (in BDT)</label>
+                            <input type="number" id="rent" name="rent" class="form-control" placeholder="Enter monthly rent" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="number_of_rooms">Number of Rooms</label>
+                            <input type="number" id="number_of_rooms" name="number_of_rooms" class="form-control" placeholder="Enter number of rooms" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" name="description" class="form-control textarea-control" placeholder="Enter property description" required></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Property Images</label>
+                        <div class="image-preview-container" id="imagePreviewContainer">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p class="image-preview-text">Drag & drop images here or <span>click to browse</span></p>
+                            <p class="image-preview-text">Supported formats: JPG, PNG, GIF</p>
+                            <input type="file" accept="image/*" multiple class="file-input" id="imageInput" name="images">
+                        </div>
+                        
+                        <div class="upload-preview" id="uploadPreview">
+                            <!-- Image previews will be added here via JavaScript -->
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <a href="{% url 'dashboard' %}" class="btn btn-cancel">Cancel</a>
+                        <button type="submit" class="btn btn-filled">Save Listing</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Accommodation</h3>
+                <p>Your trusted partner for finding the perfect stay anywhere in the world. We connect travelers with their ideal accommodations.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Services</a></li>
+                    <li><a href="#">Properties</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms & Conditions</a></li>
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Refund Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Contact Us</h3>
+                <ul>
+                    <li><i class="fas fa-map-marker-alt"></i> 123 Main Street, City</li>
+                    <li><i class="fas fa-phone"></i> +1 234 567 890</li>
+                    <li><i class="fas fa-envelope"></i> info@accommodation.com</li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            <p>&copy; 2025 Accommodation. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Image preview functionality
+        const imageInput = document.getElementById('imageInput');
+        const uploadPreview = document.getElementById('uploadPreview');
+        
+        imageInput.addEventListener('change', function() {
+            uploadPreview.innerHTML = ''; // Clear previous previews
+            
+            if (this.files) {
+                for (let i = 0; i < this.files.length; i++) {
+                    const file = this.files[i];
+                    if (!file.type.match('image.*')) continue;
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('div');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+                        removeBtn.addEventListener('click', function() {
+                            previewItem.remove();
+                            // Note: This only removes the preview, not from the file input
+                            // In a real app, you'd need additional logic to track selected files
+                        });
+                        
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(removeBtn);
+                        uploadPreview.appendChild(previewItem);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
